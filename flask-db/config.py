@@ -1,7 +1,6 @@
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-
  
 class Config(object):
     #SECRET KEY
@@ -12,5 +11,9 @@ class Config(object):
     RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY') or 'A-VERY-LONG-SECRET-KEY'
 
     # Database configuration
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+    #Using local sqlite
+    #SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
+    
+    #Using MySQL database
+    SQLALCHEMY_DATABASE_URI = 'mysql://dbproject:dbproject@18.140.89.83:3306/app'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
