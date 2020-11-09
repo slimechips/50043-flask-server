@@ -14,6 +14,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Rating from '@material-ui/lab/Rating';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -43,6 +44,10 @@ export default function Header(props) {
   const classes = useStyles();
   const { title } = props;
   const [open, setOpen] = React.useState(false);
+  const [author, setAuthor] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [bookTitle, setBookTitle] = React.useState('');
+  const [rating, setRating] = React.useState(0);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -50,6 +55,20 @@ export default function Header(props) {
 
   const handleClose = () => {
     setOpen(false);
+    setRating(0);
+    console.log(bookTitle, author, rating, description);
+  };
+
+  const handleBookChange = (event) => {
+    setBookTitle(event.target.value);
+  };
+
+  const handleAuthorChange = (event) => {
+    setAuthor(event.target.value);
+  };
+
+  const handleDescriptionCHange = (event) => {
+    setDescription(event.target.value);
   };
 
   return (
@@ -89,31 +108,48 @@ export default function Header(props) {
               </DialogContentText>
               <TextField
                 margin="dense"
-                id="name"
+                id="bookTitle"
                 label="Book Title"
+                type='text'
                 fullWidth
+                value={bookTitle}
+                onChange={handleBookChange}
               />
               <TextField
                 margin="dense"
-                id="name"
+                id="authorName"
                 label="Author Name"
+                type='text'
                 fullWidth
+                value={author}
+                onChange={handleAuthorChange}
               />
               <TextField
                 margin="dense"
-                id="name"
+                id="description"
                 label="Description"
+                type='text'
                 fullWidth
                 multiline
                 rows={4}
+                value={description}
+                onChange={handleDescriptionCHange}
               />
+              <Typography component="legend">Rating</Typography>
+               <Rating
+                  name="simple-controlled"
+                  value={rating}
+                  onChange={(event, newRating) => {
+                    setRating(newRating);
+                  }}
+                />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose} color="primary">
                 Cancel
               </Button>
               <Button onClick={handleClose} color="primary">
-                Done
+                Add
               </Button>
             </DialogActions>
           </Dialog>
