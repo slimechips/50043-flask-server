@@ -23,13 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const sections = [
-  { title: 'Review', url: '#' },
-  { title: 'Trends', url: '#' },
-  { title: 'About', url: '#' }
-
-];
-
 const mainFeaturedPost = {
   title: 'Title of a longer featured blog post',
   description:
@@ -107,7 +100,7 @@ export default function Blog() {
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Header title="Lamezon Bookstore" sections={sections} />
+        <Header title="Lamezon Bookstore" />
         <main>
           <MainFeaturedPost post={mainFeaturedPost} />
           <h2>Current Time: {currentTime}</h2>
