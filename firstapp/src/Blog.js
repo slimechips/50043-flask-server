@@ -88,12 +88,12 @@ const sidebar = {
 export default function Blog() {
   const classes = useStyles();
   // Added by me
-  const [currentTime, setCurrentTime] = useState(0);
-  useEffect(() => {
-    axios.get('/time').then(res => {
-      setCurrentTime(res.data.time);
-    })
-  }, []);
+  // const [currentTime, setCurrentTime] = useState(0);
+  // useEffect(() => {
+  //   axios.get('/time').then(res => {
+  //     setCurrentTime(res.data.time);
+  //   })
+  // }, []);
   // End
 
   return (
@@ -103,7 +103,6 @@ export default function Blog() {
         <Header title="Lamezon Bookstore" />
         <main>
           <MainFeaturedPost post={mainFeaturedPost} />
-          <h2>Current Time: {currentTime}</h2>
           <Grid container spacing={4}>
             {featuredPosts.map((post) => (
               <FeaturedPost key={post.title} post={post} />
