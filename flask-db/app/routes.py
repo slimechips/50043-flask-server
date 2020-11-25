@@ -1,8 +1,53 @@
-from flask import Flask, render_template, url_for, flash, redirect
+from flask import Flask, render_template, url_for, flash, redirect, request
 from app import app, bcrypt, db
-from forms import RegisterForm
-from models import User
+from models import Review
+import time, json
+import random
+import pymysql
+import mysql.connector as database
 
+
+
+#React page
+@app.route('/book')
+def get_book():
+    return {"bookTitle": "IDK WTF IS GOING ON lol", "bookDescription": "THIS IS A DESCRIPTION"}
+
+@app.route('/review', methods=['GET', 'POST'])
+def handle_review():
+    review = request.get_json('review')
+    print(json.dumps(review))
+    book_review = Review(rating=review['rating'],bookTitle=review['bookTitle'],author=review['author'],description=review['description'])
+    db.session.add(book_review)
+    db.session.commit()
+    return(json.dumps(review))
+
+@app.route('/search', methods=['GET', 'POST'])
+
+def handle_search():
+    search_result = {}
+    index = 1
+    search = request.get_json('search')
+    #print(json.dumps(search))
+
+    conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    search = search['search']
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM test")
+    result = cur.fetchall()
+    #print(result)
+    for i in result:
+        if search in i:
+            #print(i)
+            search_result['Review:%s'%index] = i
+            index+=1
+    print(search_result)
+    return search_result
+    #return{"bookTitle": random.randint(1, 5), "bookDescription": random.randint(6,10)}
+
+
+#Testing registration page
+'''
 a = 1
 
 @app.route('/')
@@ -25,3 +70,4 @@ def register():
         a += 1
         return redirect(url_for('index'))
     return render_template('register.html',form = form)
+'''
