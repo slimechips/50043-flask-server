@@ -23,15 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mainFeaturedPost = {
-  title: 'Title of a longer featured blog post',
-  description:
-    "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
-  image: 'https://source.unsplash.com/random',
-  imgText: 'main image description',
-  linkText: 'Continue reading…',
-};
-
 const featuredPosts = [
   {
     title: 'Featured post',
@@ -88,22 +79,50 @@ const sidebar = {
 export default function Blog() {
   const classes = useStyles();
   // Added by me
-  const [currentTime, setCurrentTime] = useState(0);
-  useEffect(() => {
-    axios.get('/time').then(res => {
-      setCurrentTime(res.data.time);
-    })
-  }, []);
+  // const [currentTime, setCurrentTime] = useState(0);
+  // useEffect(() => {
+  //   axios.get('/time').then(res => {
+  //     setCurrentTime(res.data.time);
+  //   })
+  // }, []);
   // End
+
+  const [mainFPtitle, setMainFPtitle] = React.useState('Some Book');
+  const [mainFPdescription, setMainFPdescription] = React.useState('More descriptions');
+  const [newSearch, setNewSearch] = React.useState(false);
+
+
+  // useEffect(() => {
+  //   axios.get('/book').then(res => {
+  //     console.log(res);
+  //     console.log(res.data);
+  //     setMainFPtitle(res.data.bookTitle);
+  //     setMainFPdescription(res.data.bookDescription);
+  //   })
+  // }, [newSearch]);
+
+  const mainFeaturedPost = {
+    title: mainFPtitle,
+    description:
+      mainFPdescription,
+    image: 'https://source.unsplash.com/random',
+    imgText: 'main image description',
+    linkText: 'Continue reading…',
+  };
+
 
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Header title="Lamezon Bookstore" />
+        <Header 
+         title="Lamezon Bookstore" 
+         setNewSearch={setNewSearch} 
+         newSearch={newSearch} 
+         setMainFPtitle={setMainFPtitle} 
+         setMainFPdescription={setMainFPdescription} />
         <main>
           <MainFeaturedPost post={mainFeaturedPost} />
-          <h2>Current Time: {currentTime}</h2>
           <Grid container spacing={4}>
             {featuredPosts.map((post) => (
               <FeaturedPost key={post.title} post={post} />

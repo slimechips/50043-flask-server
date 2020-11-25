@@ -15,6 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Rating from '@material-ui/lab/Rating';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -42,12 +43,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header(props) {
   const classes = useStyles();
-  const { title } = props;
+  const title = props.title;
   const [open, setOpen] = React.useState(false);
   const [author, setAuthor] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [bookTitle, setBookTitle] = React.useState('');
   const [rating, setRating] = React.useState(0);
+  const review = {bookTitle, author, description, rating};
+  const [search, setSearch] = React.useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -55,8 +58,10 @@ export default function Header(props) {
 
   const handleClose = () => {
     setOpen(false);
-    setRating(0);
-    console.log(bookTitle, author, rating, description);
+    setBookTitle('');
+    setAuthor('');
+    setDescription('');
+    setRating(0); 
   };
 
   const handleBookChange = (event) => {
@@ -70,6 +75,32 @@ export default function Header(props) {
   const handleDescriptionCHange = (event) => {
     setDescription(event.target.value);
   };
+
+  const handleAdd = () => {
+    handleClose();
+    console.log(bookTitle, author, rating, description);
+    axios.post('/review', {review})
+    .then(res => {
+      console.log(res);
+      console.log(res.data);
+    })
+  }
+
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
+  }
+
+  const handleSearch = () => {
+    axios.post('/search', {search})
+    .then(res => {
+      console.log(res);
+      console.log(res.data);
+      props.setMainFPtitle(res.data.bookTitle);
+      props.setMainFPdescription(res.data.bookDescription);
+    });
+    setSearch('');
+    props.setNewSearch(!props.newSearch);
+  }
 
   return (
     <React.Fragment>
@@ -87,10 +118,12 @@ export default function Header(props) {
           className={classes.textField}
           label="Search for a book"
           noWrap
+          value={search}
+          onChange={handleSearchChange}
           InputProps={{
             endAdornment:(
               <InputAdornment>
-                <IconButton>
+                <IconButton onClick={handleSearch}>
                   <SearchIcon />
                 </IconButton>
               </InputAdornment>
@@ -148,7 +181,7 @@ export default function Header(props) {
               <Button onClick={handleClose} color="primary">
                 Cancel
               </Button>
-              <Button onClick={handleClose} color="primary">
+              <Button onClick={handleAdd} color="primary">
                 Add
               </Button>
             </DialogActions>
