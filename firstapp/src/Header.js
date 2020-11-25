@@ -43,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header(props) {
   const classes = useStyles();
-  const { title } = props;
+  const title = props.title;
   const [open, setOpen] = React.useState(false);
   const [author, setAuthor] = React.useState('');
   const [description, setDescription] = React.useState('');
@@ -95,7 +95,11 @@ export default function Header(props) {
     .then(res => {
       console.log(res);
       console.log(res.data);
-    })
+      props.setMainFPtitle(res.data.bookTitle);
+      props.setMainFPdescription(res.data.bookDescription);
+    });
+    setSearch('');
+    props.setNewSearch(!props.newSearch);
   }
 
   return (

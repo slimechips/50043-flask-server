@@ -23,15 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const mainFeaturedPost = {
-  title: 'Title of a longer featured blog post',
-  description:
-    "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
-  image: 'https://source.unsplash.com/random',
-  imgText: 'main image description',
-  linkText: 'Continue reading…',
-};
-
 const featuredPosts = [
   {
     title: 'Featured post',
@@ -96,11 +87,40 @@ export default function Blog() {
   // }, []);
   // End
 
+  const [mainFPtitle, setMainFPtitle] = React.useState('Some Book');
+  const [mainFPdescription, setMainFPdescription] = React.useState('More descriptions');
+  const [newSearch, setNewSearch] = React.useState(false);
+
+
+  // useEffect(() => {
+  //   axios.get('/book').then(res => {
+  //     console.log(res);
+  //     console.log(res.data);
+  //     setMainFPtitle(res.data.bookTitle);
+  //     setMainFPdescription(res.data.bookDescription);
+  //   })
+  // }, [newSearch]);
+
+  const mainFeaturedPost = {
+    title: mainFPtitle,
+    description:
+      mainFPdescription,
+    image: 'https://source.unsplash.com/random',
+    imgText: 'main image description',
+    linkText: 'Continue reading…',
+  };
+
+
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
-        <Header title="Lamezon Bookstore" />
+        <Header 
+         title="Lamezon Bookstore" 
+         setNewSearch={setNewSearch} 
+         newSearch={newSearch} 
+         setMainFPtitle={setMainFPtitle} 
+         setMainFPdescription={setMainFPdescription} />
         <main>
           <MainFeaturedPost post={mainFeaturedPost} />
           <Grid container spacing={4}>
