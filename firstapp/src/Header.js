@@ -79,7 +79,7 @@ export default function Header(props) {
   const handleAdd = () => {
     handleClose();
     console.log(bookTitle, author, rating, description);
-    axios.post('/review', {review})
+    axios.post('/review', review)
     .then(res => {
       console.log(res);
       console.log(res.data);
@@ -95,8 +95,8 @@ export default function Header(props) {
     .then(res => {
       console.log(res);
       console.log(res.data);
-      props.setMainFPtitle(res.data.bookTitle);
-      props.setMainFPdescription(res.data.bookDescription);
+      props.setMainFPtitle(res.data[0].bookTitle);
+      props.setMainFPdescription(res.data[0].description);
     });
     setSearch('');
     props.setNewSearch(!props.newSearch);
