@@ -45,11 +45,15 @@ export default function Header(props) {
   const classes = useStyles();
   const title = props.title;
   const [open, setOpen] = React.useState(false);
-  const [author, setAuthor] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [bookTitle, setBookTitle] = React.useState('');
-  const [rating, setRating] = React.useState(0);
-  const review = {bookTitle, author, description, rating};
+
+  const [reviewerName, setReviewerName] = React.useState('');
+  const [reviewerID, setReviewerID] = React.useState('');
+  const [summary, setSummary] = React.useState('');
+  const [reviewText, setReviewText] = React.useState('');
+  const [asin, setAsin] = React.useState('');
+  const [overall, setOverall] = React.useState(0);
+  const review = {asin, reviewerName, reviewerID, summary, reviewText, overall};
+
   const [search, setSearch] = React.useState('');
 
   const handleClickOpen = () => {
@@ -58,27 +62,37 @@ export default function Header(props) {
 
   const handleClose = () => {
     setOpen(false);
-    setBookTitle('');
-    setAuthor('');
-    setDescription('');
-    setRating(0); 
+    setAsin('');
+    setReviewerName('');
+    setReviewerID('');
+    setSummary('');
+    setReviewText('');
+    setOverall(0); 
   };
 
-  const handleBookChange = (event) => {
-    setBookTitle(event.target.value);
+  const handleAsinChange = (event) => {
+    setAsin(event.target.value);
   };
 
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value);
+  const handleReviewerNameChange = (event) => {
+    setReviewerName(event.target.value);
   };
 
-  const handleDescriptionCHange = (event) => {
-    setDescription(event.target.value);
+  const handleReviewerIDChange = (event) => {
+    setReviewerID(event.target.value);
+  };
+
+  const handleSummaryChange = (event) => {
+    setSummary(event.target.value);
+  };
+
+  const handleReviewTextChange = (event) => {
+    setReviewText(event.target.value);
   };
 
   const handleAdd = () => {
     handleClose();
-    console.log(bookTitle, author, rating, description);
+    console.log(asin, reviewerName, reviewerID, summary, reviewText, overall);
     axios.post('/review', review)
     .then(res => {
       console.log(res);
@@ -141,39 +155,57 @@ export default function Header(props) {
               </DialogContentText>
               <TextField
                 margin="dense"
-                id="bookTitle"
-                label="Book Title"
+                id="asin"
+                label="Book ID"
                 type='text'
                 fullWidth
-                value={bookTitle}
-                onChange={handleBookChange}
+                value={asin}
+                onChange={handleAsinChange}
               />
               <TextField
                 margin="dense"
-                id="authorName"
-                label="Author Name"
+                id="reviewerName"
+                label="Your Name"
                 type='text'
                 fullWidth
-                value={author}
-                onChange={handleAuthorChange}
+                value={reviewerName}
+                onChange={handleReviewerNameChange}
               />
               <TextField
                 margin="dense"
-                id="description"
+                id="reviewerID"
+                label="Your ID"
+                type='text'
+                fullWidth
+                value={reviewerID}
+                onChange={handleReviewerIDChange}
+              />
+              <TextField
+                margin="dense"
+                id="summary"
+                label="Brief summary of your review"
+                type='text'
+                fullWidth
+                value={summary}
+                onChange={handleSummaryChange}
+              />
+              <TextField
+                margin="dense"
+                id="reviewText"
                 label="Description"
                 type='text'
                 fullWidth
                 multiline
                 rows={4}
-                value={description}
-                onChange={handleDescriptionCHange}
+                value={reviewText}
+                onChange={handleReviewTextChange}
               />
               <Typography component="legend">Rating</Typography>
                <Rating
                   name="simple-controlled"
-                  value={rating}
-                  onChange={(event, newRating) => {
-                    setRating(newRating);
+                  value={overall}
+                  onChange={(event, newOverall) => {
+                    setOverall(newOverall);
                   }}
                 />
             </DialogContent>
