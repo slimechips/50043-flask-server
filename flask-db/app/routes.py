@@ -5,6 +5,7 @@ import time, json
 import random
 import pymysql
 import mysql.connector as database
+from flask.json import jsonify
 
 
 
@@ -27,25 +28,26 @@ def handle_review():
 def handle_search():
     search_result = {}
     index = 1
+    flag = 1
     search = request.get_json('search')
     #print(json.dumps(search))
 
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     search = search['search']
     cur = conn.cursor()
-    cur.execute("SELECT * FROM test")
-    result = cur.fetchall()
-    #print(result)
-    for i in result:
-        if search in i:
-            #print(i)
-            search_result['Review:%s'%index] = i
-            index+=1
-    print(search_result)
-    return search_result
-    #return{"bookTitle": random.randint(1, 5), "bookDescription": random.randint(6,10)}
+    cur.execute("SELECT * FROM test where (bookTitle='%s') OR (author='%s')" %(search,search))
+    row_headers = [x[0] for x in cur.description]
+    result = cur.fetchall() 
+    json_data = []
+    for m in result:
+        json_data.append(dict(zip(row_headers,m)))
+    print(json.dumps(json_data))
+
+    return jsonify(json_data)
 
 
+
+    
 #Testing registration page
 '''
 a = 1
