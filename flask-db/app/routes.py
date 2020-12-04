@@ -6,7 +6,8 @@ import random
 import pymysql
 import mysql.connector as database
 from flask.json import jsonify
-
+from flask_pymongo import PyMongo
+import time
 
 
 #React page
@@ -18,10 +19,12 @@ def get_book():
 def handle_review():
     review = request.get_json('review')
     print(json.dumps(review))
-    book_review = Review(rating=review['rating'],bookTitle=review['bookTitle'],author=review['author'],description=review['description'])
+    #book_review = Review(rating=review['rating'],bookTitle=review['bookTitle'],author=review['author'],description=review['description'])
+    book_review = Review(asin=review['asin'],helpful='[0, 0]',overall=review['overall'],reviewText=review['reviewText'],reviewTime=time.strftime("%m %d, %Y",time.localtime()),reviewerID=review['reviewerID'],reviewerName=review['reviewerName'],summary=review['summary'],unixReviewTime=str(int(time.time())))
     db.session.add(book_review)
     db.session.commit()
     return(json.dumps(review))
+
 
 @app.route('/search', methods=['GET', 'POST'])
 
@@ -35,7 +38,8 @@ def handle_search():
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     search = search['search']
     cur = conn.cursor()
-    cur.execute("SELECT * FROM test where (bookTitle='%s') OR (author='%s')" %(search,search))
+    #cur.execute("SELECT * FROM test where (bookTitle='%s') OR (author='%s')" %(search,search))
+    cur.execute("SELECT * FROM reviews where reviewerName='%s'"%search)
     row_headers = [x[0] for x in cur.description]
     result = cur.fetchall() 
     json_data = []

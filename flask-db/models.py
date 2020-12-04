@@ -1,9 +1,8 @@
 from app import db
 
-'''
+
 class Review(db.Model):
     __tablename__='reviews' #Set the tablename
-    idx = db.Column(db.Integer, primary_key=True)
     asin = db.Column(db.String(10), unique=True, nullable=False)
     helpful = db.Column(db.String(65535), nullable=True)
     overall = db.Column(db.Integer)
@@ -13,15 +12,16 @@ class Review(db.Model):
     reviewerName = db.Column(db.String(65535), nullable=True)
     summary = db.Column(db.String(65535), nullable=True)
     unixReviewTime = db.Column(db.String(65535), nullable=True)
-'''
+    idx_new = db.Column(db.Integer, primary_key=True)
 
+'''
 class Review(db.Model):
     __tablename__='test' #Set the tablename
     rating = db.Column(db.Integer)
     bookTitle = db.Column(db.String(65535), nullable=False,primary_key=True)
     author = db.Column(db.String(65535), nullable=False)
     description = db.Column(db.String(65535), nullable=False)
-
+'''
         
 class User(db.Model):
     __tablename__='users' #Set the tablename
