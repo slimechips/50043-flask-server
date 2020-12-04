@@ -16,6 +16,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Rating from '@material-ui/lab/Rating';
 import axios from 'axios';
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -45,6 +46,7 @@ export default function Header(props) {
   const classes = useStyles();
   const title = props.title;
   const [open, setOpen] = React.useState(false);
+  const [openBook, setOpenBook] = React.useState(false);
 
   const [reviewerName, setReviewerName] = React.useState('');
   const [reviewerID, setReviewerID] = React.useState('');
@@ -52,7 +54,12 @@ export default function Header(props) {
   const [reviewText, setReviewText] = React.useState('');
   const [asin, setAsin] = React.useState('');
   const [overall, setOverall] = React.useState(0);
+  const [bookTitle, setBookTitle] = React.useState('');
+  const [price, setPrice] = React.useState('');
+  const [category, setCategory] = React.useState('');
+  const [brand, setBrand] = React.useState('');
   const review = {asin, reviewerName, reviewerID, summary, reviewText, overall};
+  const books = {asin, bookTitle, price, category, brand};
 
   const [search, setSearch] = React.useState('');
 
@@ -60,14 +67,23 @@ export default function Header(props) {
     setOpen(true);
   };
 
+  const handleClickOpenBook = () => {
+    setOpenBook(true);
+  };
+
   const handleClose = () => {
     setOpen(false);
+    setOpenBook(false);
     setAsin('');
     setReviewerName('');
     setReviewerID('');
     setSummary('');
     setReviewText('');
     setOverall(0); 
+    setBookTitle('');
+    setPrice('');
+    setCategory('');
+    setBrand('');
   };
 
   const handleAsinChange = (event) => {
@@ -90,10 +106,36 @@ export default function Header(props) {
     setReviewText(event.target.value);
   };
 
+  const handleBookTitleChange = (event) => {
+    setBookTitle(event.target.value);
+  };
+
+  const handlePriceChange = (event) => {
+    setPrice(event.target.value);
+  };
+
+  const handleCategoryChange = (event) => {
+    setCategory(event.target.value);
+  };
+
+  const handleBrandChange = (event) => {
+    setBrand(event.target.value);
+  };
+
   const handleAdd = () => {
     handleClose();
     console.log(asin, reviewerName, reviewerID, summary, reviewText, overall);
     axios.post('/review', review)
+    .then(res => {
+      console.log(res);
+      console.log(res.data);
+    })
+  }
+
+  const handleAddBook = () => {
+    handleClose();
+    console.log(asin, bookTitle, price, category, brand);
+    axios.post('/books', books)
     .then(res => {
       console.log(res);
       console.log(res.data);
@@ -218,8 +260,71 @@ export default function Header(props) {
               </Button>
             </DialogActions>
           </Dialog>
-          <Button className={classes.myButton}>Trending</Button>
-          <Button className={classes.myButton}>About</Button>
+          <Button className={classes.myButton} onClick={handleClickOpenBook}>Trending</Button>
+          <Dialog open={openBook} onClose={handleClose} aria-labelledby="form-dialog-title">
+            <DialogTitle id="form-addbk-dialog-title">Add a Book</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                To add a book to this website, please enter the book's author, title and a brief description.
+              </DialogContentText>
+              <TextField
+                margin="dense"
+                id="asin"
+                label="Book ID"
+                type='text'
+                fullWidth
+                value={asin}
+                onChange={handleAsinChange}
+              />
+              <TextField
+                margin="dense"
+                id="bookTitle"
+                label="Book Title"
+                type='text'
+                fullWidth
+                value={bookTitle}
+                onChange={handleBookTitleChange}
+              />
+              <TextField
+                margin="dense"
+                id="price"
+                label="Price"
+                type='text'
+                fullWidth
+                value={price}
+                onChange={handlePriceChange}
+              />
+              <TextField
+                margin="dense"
+                id="category"
+                label="Category"
+                type='text'
+                fullWidth
+                value={category}
+                onChange={handleCategoryChange}
+              />
+              <TextField
+                margin="dense"
+                id="brand"
+                label="Brand"
+                type='text'
+                fullWidth
+                value={brand}
+                onChange={handleBrandChange}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleAddBook} color="primary">
+                Add
+              </Button>
+            </DialogActions>
+          </Dialog>
+          <Link to='/Sort'>
+            <Button className={classes.myButton}>About</Button>
+          </Link>
       </Toolbar>
     </React.Fragment>
   );

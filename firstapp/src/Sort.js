@@ -16,6 +16,8 @@ import post1 from './blog-post.1.md';
 import post2 from './blog-post.2.md';
 import post3 from './blog-post.3.md';
 import axios from 'axios';
+import { XGrid, RowsProp, ColDef } from '@material-ui/x-grid';
+import { useDemoData } from '@material-ui/x-grid-data-generator';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -24,6 +26,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const postItems = [{'book':'featured', 'curDate':'Nov 12','val':'test', 'imgTxt':'Image text'},
+{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'},
+{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'},
+{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'},
+{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'},
+{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'},
+{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'},
 {'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'}];
 
 var featuredPosts = postItems.map(function(e) {
@@ -35,33 +43,6 @@ var featuredPosts = postItems.map(function(e) {
     imageText: e.imgTxt
   }
 });
-
-// const featuredPosts = [
-//   {
-//     title: 'Featured post',
-//     date: 'Nov 12',
-//     description:
-//       'This is a wider card with supporting text below as a natural lead-in to additional content.',
-//     image: 'https://source.unsplash.com/random',
-//     imageText: 'Image Text',
-//   },
-//   {
-//     title: 'Yes Hi this is a post',
-//     date: 'Nov 11',
-//     description:
-//       'This is a wider card with supporting text below as a natural lead-in to additional content.',
-//     image: 'https://source.unsplash.com/random',
-//     imageText: 'Image Text',
-//   },
-//   {
-//     title: 'Yes Hi this is another post',
-//     date: 'Nov 11',
-//     description:
-//       'This is a wider card with supporting text below as a natural lead-in to additional content.',
-//     image: 'https://source.unsplash.com/random',
-//     imageText: 'Image Text',
-//   },
-// ];
 
 const posts = [post1, post2, post3];
 
@@ -89,58 +70,49 @@ const sidebar = {
   ],
 };
 
+const rows = [
+    {id: 1, col1: 'Some Book',  col2: 'Some Author', col3: 'Some Genre'},
+    {id: 2, col1: 'Some Book',  col2: 'Some Author', col3: 'Some Genre'},
+    {id: 3, col1: 'Some Book',  col2: 'Some Author', col3: 'Genre'},
+    {id: 4, col1: 'Some Book',  col2: 'Some Author', col3: 'Genre'},
+    {id: 5, col1: 'Some Book',  col2: 'Some Author', col3: 'Some Genre'},
+];
+
 export default function Blog() {
   const classes = useStyles();
-  // Added by me
-  // const [currentTime, setCurrentTime] = useState(0);
-  // useEffect(() => {
-  //   axios.get('/time').then(res => {
-  //     setCurrentTime(res.data.time);
-  //   })
-  // }, []);
-  // End
 
   const [mainFPtitle, setMainFPtitle] = React.useState('Some Book');
   const [mainFPdescription, setMainFPdescription] = React.useState('More descriptions');
   const [newSearch, setNewSearch] = React.useState(false);
 
-
-  // useEffect(() => {
-  //   axios.get('/book').then(res => {
-  //     console.log(res);
-  //     console.log(res.data);
-  //     setMainFPtitle(res.data.bookTitle);
-  //     setMainFPdescription(res.data.bookDescription);
-  //   })
-  // }, [newSearch]);
-
-  const mainFeaturedPost = {
-    title: mainFPtitle,
-    description:
-      mainFPdescription,
-    image: 'https://source.unsplash.com/random',
-    imgText: 'main image description',
-    linkText: 'Continue reading…',
-  };
-
+  const { data } = useDemoData({
+    dataSet: 'Commodity',
+    rowLength: 1000,
+    maxColumns: 6,
+  });
 
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
         <Header 
-         title="Lamezon Bookstore" 
+         title="Amazon Bookstore" 
          setNewSearch={setNewSearch} 
          newSearch={newSearch} 
          setMainFPtitle={setMainFPtitle} 
          setMainFPdescription={setMainFPdescription} />
         <main>
-          <MainFeaturedPost post={mainFeaturedPost} />
-          <Grid container spacing={4}>
-            {featuredPosts.map((post) => (
-              <FeaturedPost key={post.title} post={post} />
-            ))}
-          </Grid>
+          <div style={{ height: 700, width: '100%' }}>
+            <XGrid 
+              columns={[
+                {field: 'col1', headerName: 'Book Title', flex: 1},
+                {field: 'col2', headerName: 'Author', flex: 0.5, resizable: false},
+                {field: 'col3', headerName: 'Genre', flex: 0.5, resizable: false},  
+              ]} 
+              rows={rows}
+              onRowSelection={console.log(rows)}
+            />
+          </div>
           <Grid container spacing={5} className={classes.mainGrid}>
             <Main title="See what other people are reading now" posts={posts} />
             <Sidebar
