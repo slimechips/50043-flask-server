@@ -8,6 +8,8 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Hidden from '@material-ui/core/Hidden';
+import ReviewDialog from './ReviewDialog'
+import axios from 'axios';
 
 const useStyles = makeStyles({
   card: {
@@ -24,21 +26,48 @@ const useStyles = makeStyles({
 export default function FeaturedPost(props) {
   const classes = useStyles();
   const { post } = props;
+  const [open, setOpen] = React.useState(false);
+  const [reviews, setReviews] = React.useState([]);
+  const title = post.title;
+  console.log(title);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+    axios.post('/review_search', {title})
+    .then(res => {
+      console.log(res);
+      console.log(res.data);
+      setReviews(res.data);
+    });
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <Grid item xs={12} md={6}>
-      <CardActionArea component="a" href="#">
+      <CardActionArea component="a" href="#" onClick={handleClickOpen}>
         <Card className={classes.card}>
           <div className={classes.cardDetails}>
             <CardContent>
               <Typography component="h2" variant="h5">
-                {post.title}
+                Title: {post.title}
               </Typography>
               <Typography variant="subtitle1" color="textSecondary">
-                {post.date}
+                Author: {post.authors}
               </Typography>
               <Typography variant="subtitle1" paragraph>
-                {post.description}
+                Category: {post.category}
+              </Typography>
+              <Typography variant="subtitle1" paragraph>
+                Brand: {post.brands}
+              </Typography>
+              <Typography variant="subtitle1" paragraph>
+                ID: {post.bookID}
+              </Typography>
+              <Typography variant="subtitle1" paragraph>
+                Price: {post.prices}
               </Typography>
               <Typography variant="subtitle1" color="primary">
                 Continue reading...
@@ -46,10 +75,15 @@ export default function FeaturedPost(props) {
             </CardContent>
           </div>
           <Hidden xsDown>
-            <CardMedia className={classes.cardMedia} image={post.image} title={post.imageTitle} />
+            <CardMedia className={classes.cardMedia} image={post.image} />
           </Hidden>
         </Card>
       </CardActionArea>
+      <ReviewDialog
+        bookTitle={post.title}
+        handleClose={handleClose}
+        open={open}
+        reviews={reviews}/>
     </Grid>
   );
 }
