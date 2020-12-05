@@ -6,14 +6,28 @@ import random
 import pymysql
 import mysql.connector as database
 from flask.json import jsonify
-from flask_pymongo import PyMongo
+import pymongo
 import time
+from copy import deepcopy
 
 
 #React page
 @app.route('/book')
 def get_book():
     return {"bookTitle": "IDK WTF IS GOING ON lol", "bookDescription": "THIS IS A DESCRIPTION"}
+
+@app.route('/books', methods=['GET', 'POST'])
+def add_book():
+    books = request.get_json('books')
+    print(json.dumps(books))
+    #myclient = pymongo.MongoClient("mongodb://3.1.212.62:27017/")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    mydb = myclient["book_meta"]
+    mycol = mydb["bookmeta"]
+    mycol.insert_one(books)
+    print("Added")
+    return("SUCCESS")
+
 
 @app.route('/review', methods=['GET', 'POST'])
 def handle_review():
@@ -27,8 +41,49 @@ def handle_review():
 
 
 @app.route('/search', methods=['GET', 'POST'])
-
 def handle_search():
+    book_list = []
+    bookID = ""
+    #Search reviews from mysql
+    search = request.get_json('search')
+    #print(json.dumps(search))
+    search = search['search']
+
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    mydb = myclient["book_meta"]
+    mycol = mydb["bookmeta"]
+
+    mydoc = mycol.find({"author":search}) 
+    for x in mydoc:
+        del x['_id']
+        book_list.append(x)
+
+        
+    if (book_list == []):
+        mydoc = mycol.find({"bookTitle":search}) 
+        for x in mydoc:
+            del x['_id']
+            book_list.append(x)
+
+
+        if book_list == []:
+            mydoc = mycol.find({"asin":search})
+            for x in mydoc:
+                del x['_id']
+                book_list.append(x)
+    
+    print(book_list)
+
+    #return("suecess")
+    if book_list == []:
+        return("It is empyty")
+    else:
+        return(jsonify(book_list))
+
+'''  
+@app.route('/search', methods=['GET', 'POST'])
+def handle_search():
+   
     search_result = {}
     index = 1
     flag = 1
@@ -46,9 +101,10 @@ def handle_search():
     for m in result:
         json_data.append(dict(zip(row_headers,m)))
     print(json.dumps(json_data))
-
+    print(type(json_data[0]))
     return jsonify(json_data)
-
+ '''   
+    
 
 
     
@@ -76,4 +132,17 @@ def register():
         a += 1
         return redirect(url_for('index'))
     return render_template('register.html',form = form)
+
+    conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    cur = conn.cursor()
+    #cur.execute("SELECT * FROM test where (bookTitle='%s') OR (author='%s')" %(search,search))
+    cur.execute("SELECT * FROM reviews where reviewerName='%s'"%search)
+    row_headers = [x[0] for x in cur.description]
+    result = cur.fetchall() 
+    json_data = []
+    for m in result:
+        json_data.append(dict(zip(row_headers,m)))
+    print("Reviews:",json.dumps(json_data))
+    
+    return (jsonify(json_data)
 '''
