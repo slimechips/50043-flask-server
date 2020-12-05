@@ -23,19 +23,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const postItems = [{'book':'featured', 'curDate':'Nov 12','val':'test', 'imgTxt':'Image text'},
-{'book':'featured1', 'curDate':'Nov 14','val':'test1', 'imgTxt':'Image text1'}];
-
-var featuredPosts = postItems.map(function(e) {
-  return{
-    title: e.book,
-    date: e.curDate,
-    description: e.val,
-    image: 'https://source.unsplash.com/random',
-    imageText: e.imgTxt
-  }
-});
-
 // const featuredPosts = [
 //   {
 //     title: 'Featured post',
@@ -123,13 +110,28 @@ export default function Blog() {
     linkText: 'Continue reading…',
   };
 
+const [postItems, setPostItems] = useState([]);
+
+var featuredPosts = postItems.map(function(e) {
+  return{
+    title: e.bookTitle,
+    category: e.categories,
+    brands: e.brand,
+    image: e.imgUrl,
+    bookID: e.asin,
+    authors: e.author,
+    prices: e.price
+  }
+});
+
 
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
         <Header 
-         title="Lamezon Bookstore" 
+         title="Lamezon Bookstore"
+         setPostItems={setPostItems}
          setNewSearch={setNewSearch} 
          newSearch={newSearch} 
          setMainFPtitle={setMainFPtitle} 

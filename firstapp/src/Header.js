@@ -151,8 +151,7 @@ export default function Header(props) {
     .then(res => {
       console.log(res);
       console.log(res.data);
-      props.setMainFPtitle(res.data[0].bookTitle);
-      props.setMainFPdescription(res.data[0].description);
+      props.setPostItems(res.data);
     });
     setSearch('');
     props.setNewSearch(!props.newSearch);
