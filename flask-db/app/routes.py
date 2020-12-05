@@ -72,7 +72,7 @@ def handle_search():
                 del x['_id']
                 book_list.append(x)
     
-    print(book_list)
+    print("From MongoDB:",book_list)
 
     #return("suecess")
     if book_list == []:
@@ -88,17 +88,16 @@ def handle_review_search():
     #print(json.dumps(search))
 
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
-    search = search['search']
+    search = search['title']
+    print("I AM SEARCHING:",search)
     cur = conn.cursor()
-    #cur.execute("SELECT * FROM test where (bookTitle='%s') OR (author='%s')" %(search,search))
     cur.execute("SELECT * FROM reviews where asin='%s'"%search)
     row_headers = [x[0] for x in cur.description]
     result = cur.fetchall() 
     json_data = []
     for m in result:
         json_data.append(dict(zip(row_headers,m)))
-    print(json.dumps(json_data))
-    print(type(json_data[0]))
+    print("From MySQL:",json.dumps(json_data))
     return jsonify(json_data)
   
     
