@@ -76,25 +76,22 @@ def handle_search():
 
     #return("suecess")
     if book_list == []:
-        return("It is empyty")
+        return([])
     else:
         return(jsonify(book_list))
 
-'''  
-@app.route('/search', methods=['GET', 'POST'])
-def handle_search():
+  
+@app.route('/review_search', methods=['GET', 'POST'])
+def handle_review_search():
    
-    search_result = {}
-    index = 1
-    flag = 1
-    search = request.get_json('search')
+    search = request.get_json('review_search')
     #print(json.dumps(search))
 
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     search = search['search']
     cur = conn.cursor()
     #cur.execute("SELECT * FROM test where (bookTitle='%s') OR (author='%s')" %(search,search))
-    cur.execute("SELECT * FROM reviews where reviewerName='%s'"%search)
+    cur.execute("SELECT * FROM reviews where asin='%s'"%search)
     row_headers = [x[0] for x in cur.description]
     result = cur.fetchall() 
     json_data = []
@@ -103,7 +100,7 @@ def handle_search():
     print(json.dumps(json_data))
     print(type(json_data[0]))
     return jsonify(json_data)
- '''   
+  
     
 
 
