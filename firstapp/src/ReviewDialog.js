@@ -27,11 +27,16 @@ export default function ReviewDialog(props) {
   return (
     <div>
       <Dialog open={props.open} onClose={props.handleClose} aria-labelledby="form-dialog-title">
+<<<<<<< HEAD
         <DialogTitle id="form-dialog-title">Reviews</DialogTitle>
+=======
+        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+>>>>>>> 603c54b1ab7c1d7e4d0d013e81986007b9d5a69a
         <DialogContent>
           <DialogContentText>
             These are the reviews about the book:
           </DialogContentText>
+<<<<<<< HEAD
           {userReviews.map((r)=>(
             <Paper elevation={3} padding={5}>
               <Typography>
@@ -45,6 +50,19 @@ export default function ReviewDialog(props) {
               </Typography>
             </Paper>
           ))}
+=======
+          <Typography>
+            Title: {props.bookTitle}
+          </Typography>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email Address"
+            type="email"
+            fullWidth
+          />
+>>>>>>> 603c54b1ab7c1d7e4d0d013e81986007b9d5a69a
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} color="primary">
