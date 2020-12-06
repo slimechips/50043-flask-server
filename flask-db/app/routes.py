@@ -89,7 +89,7 @@ def handle_review_search():
 
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     search = search['title']
-    print("I AM SEARCHING:",search)
+    print("I am searching:",search)
     cur = conn.cursor()
     cur.execute("SELECT * FROM reviews where asin='%s'"%search)
     row_headers = [x[0] for x in cur.description]
@@ -102,17 +102,20 @@ def handle_review_search():
   
 @app.route('/sort', methods=['GET', 'POST'])
 def handle_sort():
+    print("Request received")
+    #sort = request.get_json('sort')
     sort_list = []
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    print("CONNECTED")
     cur = conn.cursor()
     cur.execute("SELECT asin, COUNT(asin) AS dup_cnt FROM reviews GROUP BY asin HAVING (dup_cnt >= 1) ORDER BY `dup_cnt` DESC LIMIT 10")
     result = cur.fetchall() 
     for x in result:
         print(x)
 
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
-    mydb = myclient["book_meta"]
-    mycol = mydb["bookmeta"]
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    #mydb = myclient["book_meta"]
+    #mycol = mydb["bookmeta"]
     return("success")
 
 

@@ -91,6 +91,14 @@ export default function Blog() {
     maxColumns: 6,
   });
 
+  const handleClickSort =() => {
+    axios.post('/sort')
+    .then(res => {
+      console.log(res);
+      console.log(res.data);
+      });
+  }
+
   return (
     <React.Fragment>
       <CssBaseline />
