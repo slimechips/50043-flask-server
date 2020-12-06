@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, flash, redirect, request
-from app import app, bcrypt, db
+from app import app,db
 from models import Review
 import time, json
 import random
@@ -9,6 +9,7 @@ from flask.json import jsonify
 import pymongo
 import time
 from copy import deepcopy
+from pymongo import MongoClient
 
 
 #React page
@@ -19,6 +20,7 @@ def get_book():
 @app.route('/books', methods=['GET', 'POST'])
 def add_book():
     books = request.get_json('books')
+    #print(books['asin'])
     print(json.dumps(books))
     #myclient = pymongo.MongoClient("mongodb://3.1.212.62:27017/")
     myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
@@ -26,6 +28,13 @@ def add_book():
     mycol = mydb["bookmeta"]
     mycol.insert_one(books)
     print("Added")
+
+    log = {"Add Book": books["asin"], "Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    mydb = myclient["user_log"]
+    mycol = mydb["userlog"]
+    mycol.insert_one(log)
+
     return("SUCCESS")
 
 
@@ -37,6 +46,12 @@ def handle_review():
     book_review = Review(asin=review['asin'],helpful='[0, 0]',overall=review['overall'],reviewText=review['reviewText'],reviewTime=time.strftime("%m %d, %Y",time.localtime()),reviewerID=review['reviewerID'],reviewerName=review['reviewerName'],summary=review['summary'],unixReviewTime=str(int(time.time())))
     db.session.add(book_review)
     db.session.commit()
+
+    log = {"Add Review": review["asin"],"Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    mydb = myclient["user_log"]
+    mycol = mydb["userlog"]
+    mycol.insert_one(log)
     return(json.dumps(review))
 
 
@@ -74,6 +89,12 @@ def handle_search():
     
     print("From MongoDB:",book_list)
 
+    log = {"Search for book": search,"Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    mydb = myclient["user_log"]
+    mycol = mydb["userlog"]
+    mycol.insert_one(log)
+
     #return("suecess")
     if book_list == []:
         return([])
@@ -98,15 +119,21 @@ def handle_review_search():
     for m in result:
         json_data.append(dict(zip(row_headers,m)))
     print("From MySQL:",json.dumps(json_data))
+
+    log = {"Search for reviews": search,"Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    mydb = myclient["user_log"]
+    mycol = mydb["userlog"]
+    mycol.insert_one(log)
     return jsonify(json_data)
   
     
 @app.route('/sort', methods=['GET', 'POST'])
 def handle_sort():
-    sort_dic = {}
+    sort_dic = []
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     cur = conn.cursor()
-    cur.execute("SELECT asin, COUNT(asin) AS dupe_cnt FROM reviews GROUP BY asin HAVING COUNT(asin)>=1 ORDER BY COUNT(asin) DESC LIMIT 100")
+    cur.execute("SELECT asin, COUNT(asin) AS dupe_cnt FROM reviews GROUP BY asin HAVING COUNT(asin)>=1 ORDER BY COUNT(asin) DESC LIMIT 10")
     result = cur.fetchall() 
     #print(result)
 
@@ -115,20 +142,35 @@ def handle_sort():
     mycol = mydb["bookmeta"]
     for i in range(len(result)):
         #print(result[i][0])
-        mydoc = mycol.find({"asin":result[i][0]}).limit(1000)
+        mydoc = mycol.find({"asin":result[i][0]})
         for x in mydoc:
             #print(x)
             category = x['categories'][0][1]
-            sort_dic['%s'%result[i][0]] = [result[i][1],category]
+            sort_dic.append({'asin':[result[i][0],result[i][1],category]})
             #print(x['categories'])
             #print(sort_dic)
-            print("Please wait......")
+            #print("Please wait......")
     print(sort_dic)
 
+    log = {"Doing sorting at": time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    mydb = myclient["user_log"]
+    mycol = mydb["userlog"]
+    mycol.insert_one(log)
+
     #return("SUCCESS")
-    return(jsonify([sort_dic]))
-        
-    
+    return(jsonify(sort_dic))
+'''        
+@app.route('/activities', methods=['GET', 'POST'])
+def add_activity():
+    log = request.get_json('activities')
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.224.242:27017")
+    mydb = myclient["book_meta"]
+    mycol = mydb["bookmeta"]
+    mycol.insert_one(log)
+    print("Added")
+    return("SUCCESS")   
+'''
 
     
 #Testing registration page
