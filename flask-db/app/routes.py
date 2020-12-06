@@ -100,7 +100,20 @@ def handle_review_search():
     print("From MySQL:",json.dumps(json_data))
     return jsonify(json_data)
   
-    
+@app.route('/sort', methods=['GET', 'POST'])
+def handle_sort():
+    sort_list = []
+    conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    cur = conn.cursor()
+    cur.execute("SELECT asin, COUNT(asin) AS dup_cnt FROM reviews GROUP BY asin HAVING (dup_cnt >= 1) ORDER BY `dup_cnt` DESC LIMIT 10")
+    result = cur.fetchall() 
+    for x in result:
+        print(x)
+
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    mydb = myclient["book_meta"]
+    mycol = mydb["bookmeta"]
+    return("success")
 
 
     
