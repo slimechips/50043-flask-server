@@ -1,0 +1,49 @@
+﻿{
+  "paragraphs": [
+    {
+      "text": "%pyspark\r\nfrom pyspark.sql import SparkSession\r\nfrom pyspark.sql.types import IntegerType\r\nfrom pyspark.sql.functions import udf\r\n\r\nclass PearsonCorrelationCalculator:\r\n    def __init__(self):\r\n        \"\"\"\r\n        Initialises a Spark session and object attributes for later processing\r\n        \"\"\"\r\n        self.spark_session = SparkSession \\\r\n            .builder.master(\"local\") \\\r\n            .appName(\"Pearson Correlation of Price and Average Review Length\") \\\r\n            .getOrCreate()\r\n\r\n        self.price_ave_review_len_rdd = None\r\n        self.pearson_correlation = 0.0\r\n\r\n    def get_pearson_correlation(self):\r\n        \"\"\"\r\n        :return: Pearson correlation of the latest uploaded books metadata and reviews\r\n        \"\"\"\r\n        return self.pearson_correlation\r\n\r\n    def get_price_and_average_review_length(self, books_metadata_path, book_reviews_path):\r\n        \"\"\"\r\n        :param books_metadata_path: path to access book metadata\r\n        :param book_reviews_path: path to access book reviews on Amazon\r\n        :return: None\r\n        \"\"\"\r\n        books_metadata = self.spark_session.read.json(books_metadata_path)\r\n\r\n        book_asin_prices_raw = books_metadata.select('asin', 'price')\r\n        book_asin_prices_cleaned = book_asin_prices_raw.filter(book_asin_prices_raw.price.isNotNull())\r\n\r\n        book_reviews = self.spark_session.read.csv(book_reviews_path, header=True, mode=\"DROPMALFORMED\")\r\n\r\n        get_review_len = udf(lambda x: len(x.split(\" \")) if x is not None else 0, IntegerType())\r\n        book_ave_len = book_reviews.withColumn('review_len', get_review_len(book_reviews['reviewText'])) \\\r\n            .select('asin', 'review_len') \\\r\n            .groupby('asin') \\\r\n            .agg({'review_len': 'mean'})\r\n\r\n        self.price_ave_review_len_rdd = book_asin_prices_cleaned.join(book_ave_len, \"asin\").rdd\r\n\r\n    def calculate_pearson_correlation(self, decimals=10):\r\n        \"\"\"\r\n        :param decimals: decimal place accuracy of pearson correlation. 10 dp by default\r\n        :return: pearson correlation of price and average review length to {decimals} dp.\r\n        \"\"\"\r\n\r\n        ave_len_price_prods = self.price_ave_review_len_rdd.map(lambda price_avg:\r\n                                                                price_avg[\"price\"] * price_avg[\"avg(review_len)\"])\r\n        sum_of_ave_len_price_prods = ave_len_price_prods.reduce(lambda val1, val2: val1 + val2)\r\n\r\n        ave_lens = self.price_ave_review_len_rdd.map(lambda price_avg: price_avg[\"avg(review_len)\"])\r\n        sum_of_ave_lens = ave_lens.reduce(lambda val1, val2: val1 + val2)\r\n\r\n        prices = self.price_ave_review_len_rdd.map(lambda price_avg: price_avg[\"price\"])\r\n        sum_of_prices = prices.reduce(lambda val1, val2: val1 + val2)\r\n\r\n        ave_len_sq = self.price_ave_review_len_rdd.map(lambda price_avg: price_avg[\"avg(review_len)\"] ** 2)\r\n        sum_of_ave_len_sq = ave_len_sq.reduce(lambda val1, val2: val1 + val2)\r\n\r\n        price_sq = self.price_ave_review_len_rdd.map(lambda price_avg: price_avg[\"price\"] ** 2)\r\n        sum_of_price_sq = price_sq.reduce(lambda val1, val2: val1 + val2)\r\n\r\n        n = self.price_ave_review_len_rdd.count()\r\n\r\n        numerator = n * sum_of_ave_len_price_prods - (sum_of_ave_lens * sum_of_prices)\r\n        denominator = ((n * sum_of_price_sq - sum_of_prices ** 2) * (n * sum_of_ave_len_sq - sum_of_ave_lens ** 2))**.5\r\n\r\n        pearson_correlation = round(numerator / denominator, decimals)\r\n\r\n        return pearson_correlation\r\n\r\n    def stop(self):\r\n        \"\"\"\r\n        Stop the PearsonCorrelationCalculator\r\n        \"\"\"\r\n        self.spark_session.stop()\r\n        return\r\n\r\nif __name__ == \"__main__\":\r\n    DEFAULT_BOOK_METADATA_PATH = \"hdfs://localhome/input/kindle-metadata.json\"\r\n    DEFAULT_BOOK_REVIEWS_PATH = \"hdfs://localhome/input/kindle_reviews.csv\"\r\n\r\n    pearson_correlation_calculator = PearsonCorrelationCalculator()\r\n\r\n    pearson_correlation_calculator.get_price_and_average_review_length(DEFAULT_BOOK_METADATA_PATH,\r\n                                                                    DEFAULT_BOOK_REVIEWS_PATH)\r\n\r\n    pearson_correlation = pearson_correlation_calculator.calculate_pearson_correlation()\r\n    pearson_correlation_calculator.stop()\r\n    print('Pearson Correlation: ', pearson_correlation)\r\n    \r\n    with open('Pearson_output.txt','w') as file:\r\n        file.write('Pearson Correlation: ')\r\n        file.write(str(pearson_correlation))",
+      "user": "anonymous",
+      "dateUpdated": "2020-12-06T13:14:38+0000",
+      "config": {
+        "colWidth": 12,
+        "fontSize": 9,
+        "enabled": true,
+        "results": {},
+        "editorSetting": {
+          "language": "python",
+          "editOnDblClick": false,
+          "completionKey": "TAB",
+          "completionSupport": true
+        },
+        "editorMode": "ace/mode/python"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "apps": [],
+      "runtimeInfos": {},
+      "progressUpdateIntervalMs": 500,
+      "jobName": "paragraph_1607257205481_2014851601",
+      "id": "paragraph_1607257205481_2014851601",
+      "dateCreated": "2020-12-06T12:20:05+0000",
+      "status": "READY",
+      "focus": true,
+      "$$hashKey": "object:2554"
+    }
+  ],
+  "name": "Pearson Correlation",
+  "id": "2FSQUJUEZ",
+  "defaultInterpreterGroup": "spark",
+  "version": "0.9.0-preview2",
+  "noteParams": {},
+  "noteForms": {},
+  "angularObjects": {},
+  "config": {
+    "isZeppelinNotebookCronEnable": false,
+    "looknfeel": "default",
+    "personalizedMode": "false"
+  },
+  "info": {},
+  "path": "/Pearson Correlation"
+}
