@@ -22,15 +22,16 @@ def add_book():
     books = request.get_json('books')
     #print(books['asin'])
     print(json.dumps(books))
-    #myclient = pymongo.MongoClient("mongodb://3.1.212.62:27017/")
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.51:27017")
     mydb = myclient["book_meta"]
     mycol = mydb["bookmeta"]
     mycol.insert_one(books)
     print("Added")
 
     log = {"Add Book": books["asin"], "Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.52:27017")
     mydb = myclient["user_log"]
     mycol = mydb["userlog"]
     mycol.insert_one(log)
@@ -48,7 +49,8 @@ def handle_review():
     db.session.commit()
 
     log = {"Add Review": review["asin"],"Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.52:27017")
     mydb = myclient["user_log"]
     mycol = mydb["userlog"]
     mycol.insert_one(log)
@@ -64,7 +66,8 @@ def handle_search():
     #print(json.dumps(search))
     search = search['search']
 
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.51:27017")
     mydb = myclient["book_meta"]
     mycol = mydb["bookmeta"]
 
@@ -90,7 +93,8 @@ def handle_search():
     print("From MongoDB:",book_list)
 
     log = {"Search for book": search,"Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.52:27017")
     mydb = myclient["user_log"]
     mycol = mydb["userlog"]
     mycol.insert_one(log)
@@ -108,7 +112,8 @@ def handle_review_search():
     search = request.get_json('review_search')
     #print(json.dumps(search))
 
-    conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    #conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    conn = database.connect(host='10.0.1.50',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     search = search['id']
     print("I AM SEARCHING:",search)
     cur = conn.cursor()
@@ -121,7 +126,8 @@ def handle_review_search():
     print("From MySQL:",json.dumps(json_data))
 
     log = {"Search for reviews": search,"Time":time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.52:27017")
     mydb = myclient["user_log"]
     mycol = mydb["userlog"]
     mycol.insert_one(log)
@@ -131,13 +137,16 @@ def handle_review_search():
 @app.route('/sort', methods=['GET', 'POST'])
 def handle_sort():
     sort_dic = []
-    conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    #conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    conn = database.connect(host='10.0.1.50',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
+    cur = conn.cursor()
     cur = conn.cursor()
     cur.execute("SELECT asin, COUNT(asin) AS dupe_cnt FROM reviews GROUP BY asin HAVING COUNT(asin)>=1 ORDER BY COUNT(asin) DESC LIMIT 10")
     result = cur.fetchall() 
     #print(result)
 
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.51:27017")
     mydb = myclient["book_meta"]
     mycol = mydb["bookmeta"]
     for i in range(len(result)):
@@ -153,7 +162,8 @@ def handle_sort():
     print(sort_dic)
 
     log = {"Doing sorting at": time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}
-    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@54.169.246.146:27017")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@10.0.1.52:27017")
     mydb = myclient["user_log"]
     mycol = mydb["userlog"]
     mycol.insert_one(log)

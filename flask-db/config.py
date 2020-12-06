@@ -15,5 +15,6 @@ class Config(object):
     #SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
     
     #Using MySQL database
-    SQLALCHEMY_DATABASE_URI = 'mysql://dbproject:dbproject@18.140.89.83:3306/BookReview'
+    #SQLALCHEMY_DATABASE_URI = 'mysql://dbproject:dbproject@18.140.89.83:3306/BookReview'
+    SQLALCHEMY_DATABASE_URI = 'mysql://dbproject:dbproject@10.0.1.50:3306/BookReview'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
