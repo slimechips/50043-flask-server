@@ -58,8 +58,9 @@ export default function Header(props) {
   const [price, setPrice] = React.useState('');
   const [category, setCategory] = React.useState('');
   const [brand, setBrand] = React.useState('');
+  const [author, setAuthor] = React.useState('');
   const review = {asin, reviewerName, reviewerID, summary, reviewText, overall};
-  const books = {asin, bookTitle, price, category, brand};
+  const books = {asin, bookTitle, author, price, category, brand};
 
   const [search, setSearch] = React.useState('');
 
@@ -84,6 +85,7 @@ export default function Header(props) {
     setPrice('');
     setCategory('');
     setBrand('');
+    setAuthor('');
   };
 
   const handleAsinChange = (event) => {
@@ -114,6 +116,11 @@ export default function Header(props) {
     setPrice(event.target.value);
   };
 
+  const handleAuthorChange = (event) => {
+    setAuthor(event.target.value);
+  };
+
+
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
@@ -134,7 +141,7 @@ export default function Header(props) {
 
   const handleAddBook = () => {
     handleClose();
-    console.log(asin, bookTitle, price, category, brand);
+    console.log(asin, bookTitle, author, price, category, brand);
     axios.post('/books', books)
     .then(res => {
       console.log(res);
@@ -161,13 +168,12 @@ export default function Header(props) {
     <React.Fragment>
       <Toolbar className={classes.toolbar}>
         <Typography
-          component="h2"
           variant="h5"
-          color="inherit"
-          noWrap
-          className={classes.toolbarTitle}
-        >
-          {title}
+          color='inherit'
+          className={classes.toolbarTitle}>
+            <Link to='/Home' color="inherit" >
+              {title}
+            </Link>          
         </Typography>
         <TextField 
           className={classes.textField}
@@ -178,9 +184,11 @@ export default function Header(props) {
           InputProps={{
             endAdornment:(
               <InputAdornment>
-                <IconButton onClick={handleSearch}>
-                  <SearchIcon />
-                </IconButton>
+                <Link to='/Home'>
+                  <IconButton onClick={handleSearch}>
+                    <SearchIcon />
+                  </IconButton>
+                </Link>
               </InputAdornment>
             )
           }}
@@ -259,7 +267,7 @@ export default function Header(props) {
               </Button>
             </DialogActions>
           </Dialog>
-          <Button className={classes.myButton} onClick={handleClickOpenBook}>Trending</Button>
+          <Button className={classes.myButton} onClick={handleClickOpenBook}>Add a new book</Button>
           <Dialog open={openBook} onClose={handleClose} aria-labelledby="form-dialog-title">
             <DialogTitle id="form-addbk-dialog-title">Add a Book</DialogTitle>
             <DialogContent>
@@ -283,6 +291,15 @@ export default function Header(props) {
                 fullWidth
                 value={bookTitle}
                 onChange={handleBookTitleChange}
+              />
+              <TextField
+                margin="dense"
+                id="author"
+                label="Author"
+                type='text'
+                fullWidth
+                value={author}
+                onChange={handleAuthorChange}
               />
               <TextField
                 margin="dense"
@@ -322,7 +339,7 @@ export default function Header(props) {
             </DialogActions>
           </Dialog>
           <Link to='/Sort'>
-            <Button className={classes.myButton}>About</Button>
+            <Button className={classes.myButton}>Book Catalog</Button>
           </Link>
       </Toolbar>
     </React.Fragment>

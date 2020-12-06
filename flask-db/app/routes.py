@@ -109,7 +109,7 @@ def handle_review_search():
     #print(json.dumps(search))
 
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
-    search = search['title']
+    search = search['id']
     print("I AM SEARCHING:",search)
     cur = conn.cursor()
     cur.execute("SELECT * FROM reviews where asin='%s'"%search)
@@ -142,14 +142,14 @@ def handle_sort():
     mycol = mydb["bookmeta"]
     for i in range(len(result)):
         #print(result[i][0])
-        mydoc = mycol.find({"asin":result[i][0]})
+        mydoc = mycol.find({"asin":result[i][0]}).limit(500)
         for x in mydoc:
             #print(x)
             category = x['categories'][0][1]
             sort_dic.append({'asin':[result[i][0],result[i][1],category]})
             #print(x['categories'])
             #print(sort_dic)
-            #print("Please wait......")
+            print("Please wait......")
     print(sort_dic)
 
     log = {"Doing sorting at": time.strftime("%Y-%m-%d-%H:%M:%S",time.localtime())}

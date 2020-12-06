@@ -29,11 +29,12 @@ export default function FeaturedPost(props) {
   const [open, setOpen] = React.useState(false);
   const [reviews, setReviews] = React.useState([]);
   const title = post.title;
+  const id = post.bookID;
   console.log(title);
 
   const handleClickOpen = () => {
     setOpen(true);
-    axios.post('/review_search', {title})
+    axios.post('/review_search', {id})
     .then(res => {
       console.log(res);
       console.log(res.data);

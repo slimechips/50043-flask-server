@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Markdown from './Markdown';
+import { requirePropFactory } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   markdown: {
@@ -23,11 +24,15 @@ export default function Main(props) {
         {title}
       </Typography>
       <Divider />
-      {posts.map((post) => (
-        <Markdown className={classes.markdown} key={post.substring(0, 40)}>
-          {post}
-        </Markdown>
-      ))}
+      <Typography>
+        Select 'Add a review' to share your opinions on a book with other readers!
+      </Typography>
+      <Typography>
+        Select 'Add a book' to request a book to be added into our catalog if it isn't already in it.
+      </Typography>
+      <Typography>
+        To check out current trending books simply head on over to our available catalog and sort it by reviews.
+      </Typography>
     </Grid>
   );
 }

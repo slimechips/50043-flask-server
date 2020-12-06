@@ -48,10 +48,7 @@ export default function ReviewDialog(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={props.handleClose} color="primary">
-            Subscribe
+            Close
           </Button>
         </DialogActions>
       </Dialog>

@@ -12,12 +12,11 @@ import FeaturedPost from './FeaturedPost';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
-import post1 from './blog-post.1.md';
-import post2 from './blog-post.2.md';
-import post3 from './blog-post.3.md';
+import post1 from './blog-post1.md';
+import post2 from './blog-post2.md';
+import post3 from './blog-post3.md';
 import axios from 'axios';
 import { XGrid, RowsProp, ColDef } from '@material-ui/x-grid';
-import { useDemoData } from '@material-ui/x-grid-data-generator';
 
 const useStyles = makeStyles((theme) => ({
   mainGrid: {
@@ -50,19 +49,6 @@ const sidebar = {
   title: 'About',
   description:
     'Etiam porta sem malesuada magna mollis euismod. Cras mattis consectetur purus sit amet fermentum. Aenean lacinia bibendum nulla sed consectetur.',
-  archives: [
-    { title: 'March 2020', url: '#' },
-    { title: 'February 2020', url: '#' },
-    { title: 'January 2020', url: '#' },
-    { title: 'November 1999', url: '#' },
-    { title: 'October 1999', url: '#' },
-    { title: 'September 1999', url: '#' },
-    { title: 'August 1999', url: '#' },
-    { title: 'July 1999', url: '#' },
-    { title: 'June 1999', url: '#' },
-    { title: 'May 1999', url: '#' },
-    { title: 'April 1999', url: '#' },
-  ],
   social: [
     { name: 'GitHub', icon: GitHubIcon },
     { name: 'Twitter', icon: TwitterIcon },
@@ -70,41 +56,39 @@ const sidebar = {
   ],
 };
 
-const rows = [
-    {id: 1, col1: 'Some Book',  col2: 'Some Author', col3: 'Some Genre'},
-    {id: 2, col1: 'Some Book',  col2: 'Some Author', col3: 'Some Genre'},
-    {id: 3, col1: 'Some Book',  col2: 'Some Author', col3: 'Genre'},
-    {id: 4, col1: 'Some Book',  col2: 'Some Author', col3: 'Genre'},
-    {id: 5, col1: 'Some Book',  col2: 'Some Author', col3: 'Some Genre'},
-];
-
 export default function Blog() {
   const classes = useStyles();
-
-  const [mainFPtitle, setMainFPtitle] = React.useState('Some Book');
-  const [mainFPdescription, setMainFPdescription] = React.useState('More descriptions');
   const [newSearch, setNewSearch] = React.useState(false);
 
-  const { data } = useDemoData({
-    dataSet: 'Commodity',
-    rowLength: 1000,
-    maxColumns: 6,
-  });
+  const [sortBooks, setSortBooks] = React.useState([]);
 
-  const handleClickSort =() => {
+  useEffect(() => {
     axios.post('/sort')
     .then(res => {
       console.log(res);
       console.log(res.data);
-      });
-  }
+      setSortBooks(res.data);
+    });
+  }, []);
+
+  var rows = sortBooks.map(function(e, index) {
+    return {
+      id: index,
+      col1: e.asin[0],
+      col2: e.asin[1],
+      col3: e.asin[2]
+    }
+  });
+
+  const [mainFPtitle, setMainFPtitle] = React.useState('Some Book');
+  const [mainFPdescription, setMainFPdescription] = React.useState('More descriptions');
 
   return (
     <React.Fragment>
       <CssBaseline />
       <Container maxWidth="lg">
         <Header 
-         title="Amazon Bookstore" 
+         title="13th Bookstore" 
          setNewSearch={setNewSearch} 
          newSearch={newSearch} 
          setMainFPtitle={setMainFPtitle} 
@@ -113,8 +97,8 @@ export default function Blog() {
           <div style={{ height: 700, width: '100%' }}>
             <XGrid 
               columns={[
-                {field: 'col1', headerName: 'Book Title', flex: 1},
-                {field: 'col2', headerName: 'Author', flex: 0.5, resizable: false},
+                {field: 'col1', headerName: 'Book ID', flex: 1},
+                {field: 'col2', headerName: 'Review count', flex: 0.5, resizable: false},
                 {field: 'col3', headerName: 'Genre', flex: 0.5, resizable: false},  
               ]} 
               rows={rows}
@@ -126,7 +110,6 @@ export default function Blog() {
             <Sidebar
               title={sidebar.title}
               description={sidebar.description}
-              archives={sidebar.archives}
               social={sidebar.social}
             />
           </Grid>
