@@ -89,7 +89,7 @@ def handle_review_search():
 
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
     search = search['title']
-    print("I am searching:",search)
+    print("I AM SEARCHING:",search)
     cur = conn.cursor()
     cur.execute("SELECT * FROM reviews where asin='%s'"%search)
     row_headers = [x[0] for x in cur.description]
@@ -100,24 +100,35 @@ def handle_review_search():
     print("From MySQL:",json.dumps(json_data))
     return jsonify(json_data)
   
+    
 @app.route('/sort', methods=['GET', 'POST'])
 def handle_sort():
-    print("Request received")
-    #sort = request.get_json('sort')
-    sort_list = []
+    sort_dic = {}
     conn = database.connect(host='18.140.89.83',user='dbproject',password='dbproject',database="BookReview",auth_plugin='mysql_native_password')
-    print("CONNECTED")
     cur = conn.cursor()
-    cur.execute("SELECT asin, COUNT(asin) AS dup_cnt FROM reviews GROUP BY asin HAVING (dup_cnt >= 1) ORDER BY `dup_cnt` DESC LIMIT 10")
+    cur.execute("SELECT asin, COUNT(asin) AS dupe_cnt FROM reviews GROUP BY asin HAVING COUNT(asin)>=1 ORDER BY COUNT(asin) DESC LIMIT 100")
     result = cur.fetchall() 
-    for x in result:
-        print(x)
+    #print(result)
 
-    #myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
-    #mydb = myclient["book_meta"]
-    #mycol = mydb["bookmeta"]
-    return("success")
+    myclient = pymongo.MongoClient("mongodb://dbproject:dbproject@3.1.212.62:27017")
+    mydb = myclient["book_meta"]
+    mycol = mydb["bookmeta"]
+    for i in range(len(result)):
+        #print(result[i][0])
+        mydoc = mycol.find({"asin":result[i][0]}).limit(1000)
+        for x in mydoc:
+            #print(x)
+            category = x['categories'][0][1]
+            sort_dic['%s'%result[i][0]] = [result[i][1],category]
+            #print(x['categories'])
+            #print(sort_dic)
+            print("Please wait......")
+    print(sort_dic)
 
+    #return("SUCCESS")
+    return(jsonify([sort_dic]))
+        
+    
 
     
 #Testing registration page
