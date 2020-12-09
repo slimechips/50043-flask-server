@@ -132,7 +132,7 @@ export default function Header(props) {
   const handleAdd = () => {
     handleClose();
     console.log(asin, reviewerName, reviewerID, summary, reviewText, overall);
-    axios.post('/review', review)
+    axios.post('http://localhost:5000/review', review)
     .then(res => {
       console.log(res);
       console.log(res.data);
@@ -142,7 +142,7 @@ export default function Header(props) {
   const handleAddBook = () => {
     handleClose();
     console.log(asin, bookTitle, author, price, category, brand);
-    axios.post('/books', books)
+    axios.post('http://localhost:5000/books', books)
     .then(res => {
       console.log(res);
       console.log(res.data);
@@ -154,7 +154,7 @@ export default function Header(props) {
   }
 
   const handleSearch = () => {
-    axios.post('/search', {search})
+    axios.post('http://localhost:5000/search', {search})
     .then(res => {
       console.log(res);
       console.log(res.data);

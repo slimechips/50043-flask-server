@@ -63,7 +63,7 @@ export default function Blog() {
   const [sortBooks, setSortBooks] = React.useState([]);
 
   useEffect(() => {
-    axios.post('/sort')
+    axios.post('http://localhost:5000/sort')
     .then(res => {
       console.log(res);
       console.log(res.data);
