@@ -34,7 +34,7 @@ export default function FeaturedPost(props) {
 
   const handleClickOpen = () => {
     setOpen(true);
-    axios.post('http://localhost:5000/review_search', {id})
+    axios.post('/review_search', {id})
     .then(res => {
       console.log(res);
       console.log(res.data);
